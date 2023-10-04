@@ -7,11 +7,11 @@ export const signup = async (req, res) => {
   let errors = [];
   const { name, email, password, confirm_password } = req.body;
   if (password !== confirm_password) {
-    errors.push({ text: "Passwords do not match." });
+    errors.push({ text: "Las contraseñas no coinciden" });
   }
 
   if (password.length < 4) {
-    errors.push({ text: "Passwords must be at least 4 characters." });
+    errors.push({ text: "La contraseña debe contener al menos 4 caracteres" });
   }
 
   if (errors.length > 0) {
@@ -27,7 +27,7 @@ export const signup = async (req, res) => {
   // Look for email coincidence
   const userFound = await User.findOne({ email: email });
   if (userFound) {
-    req.flash("error_msg", "The Email is already in use.");
+    req.flash("error_msg", "El correo ya esta en uso");
     return res.redirect("/auth/signup");
   }
 
@@ -35,7 +35,7 @@ export const signup = async (req, res) => {
   const newUser = new User({ name, email, password });
   newUser.password = await newUser.encryptPassword(password);
   await newUser.save();
-  req.flash("success_msg", "You are registered.");
+  req.flash("success_msg", "Estas registrado");
   res.redirect("/auth/signin");
 };
 
@@ -50,7 +50,7 @@ export const signin = passport.authenticate("local", {
 export const logout = async (req, res, next) => {
   await req.logout((err) => {
     if (err) return next(err);
-    req.flash("success_msg", "You are logged out now.");
+    req.flash("success_msg", "Se cerró la sesion");
     res.redirect("/auth/signin");
   });
 };

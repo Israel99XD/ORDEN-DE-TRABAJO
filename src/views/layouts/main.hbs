@@ -1,28 +1,65 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <title>Notes App</title>
-    <!-- BOOTSTRAP - BOOTSWATCH THEME - COSMOS -->
-    <link rel="stylesheet" href="https://bootswatch.com/5/lux/bootstrap.min.css">
-    <!-- FONT AWESOME -->
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
-    <!-- CUSTOM CSS -->
-    <link rel="stylesheet" href="/css/main.css">
-  </head>
-  <body>
 
-    {{> navigation }}
+<head>
+  <meta charset="UTF-8">
+  <title>Ordenes de trabajo</title>
+  <!-- BOOTSTRAP - BOOTSWATCH THEME - COSMOS -->
+  <link rel="stylesheet" href="https://bootswatch.com/5/quartz/bootstrap.min.css">
+  <!-- FONT AWESOME -->
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css"
+    integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+  <!-- CUSTOM CSS -->
+  <link rel="stylesheet" href="/css/main.css">
+  <!--Google fonts-->
+  <link href="https://fonts.googleapis.com/css2?family=Bungee+Inline&family=Nosifer&family=Tilt+Prism&display=swap"
+    rel="stylesheet">
+  {{> navigation }}
 
-    <main class="container p-5">
-      <div class="col-md-4 offset-md-4">
-        {{> messages }}
-        {{> errors }}
-      </div>
-      {{{ body }}}
-    </main>
+  <main class="container p-3">
+    <div class="col-md-4 offset-md-4">
+      {{> messages }}
+      {{> errors }}
+    </div>
+    {{{ body }}}
+  </main>
 
-    <!-- Scritps -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Scritps -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+    crossorigin="anonymous"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+  <script>
+    window.setTimeout(function () {
+      $(".alert").fadeTo(200, 0).slideUp(200, function () {
+        $(this).remove();
+      });
+    }, 2000);
+  </script>
+
+  <script>
+    // Example starter JavaScript for disabling form submissions if there are invalid fields
+    (() => {
+      'use strict'
+
+      // Fetch all the forms we want to apply custom Bootstrap validation styles to
+      const forms = document.querySelectorAll('.needs-validation')
+
+      // Loop over them and prevent submission
+      Array.from(forms).forEach(form => {
+        form.addEventListener('submit', event => {
+          if (!form.checkValidity()) {
+            event.preventDefault()
+            event.stopPropagation()
+          }
+
+          form.classList.add('was-validated')
+        }, false)
+      })
+    })()
+  </script>
+
   </body>
+
 </html>

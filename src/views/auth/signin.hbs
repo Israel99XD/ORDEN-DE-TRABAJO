@@ -1,44 +1,44 @@
 <div class="row">
   <div class="col-md-4 mx-auto">
-    <div class="card mt-5 bg-black text-white rounded">
-      <div class="card-header text-center pt-5">
+    <div class="card  text-white rounded">
+      <div class="card-header text-center">
         <h1 class="h4 text-white">
-          Account Login
+          INICIAR SESION
         </h1>
       </div>
       <img
-        class="rounded-circle mx-auto d-block logo m-4"
+        class="rounded-circle mx-auto d-block logo m-2"
         src="/img/logo.png"
         alt="Logo"
       />
       <div class="card-body">
         <form action="/auth/signin" method="POST">
-          <div class="mb-3">
-            <label for="email">Email:</label>
+          <div class="mb-2">
+            <label for="email">Correo Electronico:</label>
             <input
               type="email"
-              class="form-control bg-dark text-white"
+              class="form-control text-white"
               name="email"
-              placeholder="Email"
+              placeholder="Correo Electronico"
               autofocus
             />
           </div>
-          <div class="mb-3">
-            <label for="passswore">Password:</label>
+          <div class="mb-2">
+            <label for="passswore">Contraseña:</label>
             <input
               type="password"
-              class="form-control bg-dark text-white"
+              class="form-control  text-white"
               name="password"
-              placeholder="Password"
+              placeholder="Contraseña"
             />
           </div>
-          <button class="btn btn-success btn-block">
-            Signin
+          <button class="btn btn-danger btn-block w-100">
+            INICIAR SESIÓN
           </button>
         </form>
       </div>
 
-      <p class="text-center">Don't Have an Account? <a href="/auth/signup" class="text-info">Register</a></p>
+      <p class="text-center">NO TIENES CUENTA? <a href="/auth/signup" class="text-info">REGISTRATE</a></p>
     </div>
   </div>
 </div>

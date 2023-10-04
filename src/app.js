@@ -34,6 +34,25 @@ const hbs = exphbs.create({
 app.engine(".hbs", hbs.engine);
 app.set("view engine", ".hbs");
 
+app.get('/notes/add', (req, res) => {
+  const folio = generarNumeroFolio();
+  res.render('notes/new-note', { folio });
+});
+
+function generarNumeroFolio() {
+  const fecha = new Date();
+  const year = fecha.getFullYear().toString().slice(-2);
+  const mes = ('0' + (fecha.getMonth() + 1)).slice(-2);
+  const dia = ('0' + fecha.getDate()).slice(-2);
+  const horas = ('0' + fecha.getHours()).slice(-2);
+  const minutos = ('0' + fecha.getMinutes()).slice(-2);
+  const segundos = ('0' + fecha.getSeconds()).slice(-2);
+  const milisegundos = ('00' + fecha.getMilliseconds()).slice(-3);
+
+  const folio = year + mes + dia + horas + minutos + segundos + milisegundos;
+  return folio;
+}
+
 // middlewares
 app.use(morgan("dev"));
 app.use(express.urlencoded({ extended: false }));
@@ -63,6 +82,7 @@ app.use((req, res, next) => {
 app.use(indexRoutes);
 app.use(userRoutes);
 app.use(notesRoutes);
+
 
 // static files
 app.use(express.static(join(__dirname, "public")));
