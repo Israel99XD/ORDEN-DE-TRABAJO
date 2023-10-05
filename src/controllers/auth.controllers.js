@@ -21,6 +21,7 @@ export const signup = async (req, res) => {
       email,
       password,
       confirm_password,
+      rol
     });
   }
 
@@ -32,7 +33,7 @@ export const signup = async (req, res) => {
   }
 
   // Saving a New User
-  const newUser = new User({ name, email, password });
+  const newUser = new User({ name, email, password, rol });
   newUser.password = await newUser.encryptPassword(password);
   await newUser.save();
   req.flash("success_msg", "Estas registrado");

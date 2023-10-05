@@ -51,6 +51,14 @@ const NoteSchema = new mongoose.Schema(
       type: Number,
       require: false
     },
+    nTelefono: {
+      type: Number,
+      require: false
+    },
+    email: {
+      type:String,
+      require: true
+    },
     user: {
       type: String,
       required: true,

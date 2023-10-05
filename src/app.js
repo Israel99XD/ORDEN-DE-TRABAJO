@@ -10,19 +10,30 @@ import { dirname, join } from "path";
 import { fileURLToPath } from "url";
 import puppeteer from "puppeteer";
 import fs from "fs";
-import handlebars from "handlebars";
 import path from "path";
+import Note from "./models/Note.js";
+import handlebars from "handlebars";
+import nodemailer from "nodemailer"
+import Pieza from "./models/Pieza.js";
 
 import { MONGODB_URI, PORT } from "./config.js";
 
 import indexRoutes from "./routes/index.routes.js";
 import notesRoutes from "./routes/notes.routes.js";
+import piezasRoutes from "./routes/piezas.routes.js"
 import userRoutes from "./routes/auth.routes.js";
+
 import "./config/passport.js";
+import User from "./models/User.js";
+
 
 // Initializations
 const app = express();
+
+
 const __dirname = dirname(fileURLToPath(import.meta.url));
+
+
 
 // settings
 app.set("port", PORT);
@@ -34,6 +45,11 @@ const hbs = exphbs.create({
   layoutsDir: join(app.get("views"), "layouts"),
   partialsDir: join(app.get("views"), "partials"),
   extname: ".hbs",
+  helpers: {
+    eq: function (a, b) {
+      return a === b;
+    }
+  }
 });
 app.engine(".hbs", hbs.engine);
 app.set("view engine", ".hbs");
@@ -43,6 +59,7 @@ app.get('/notes/add', (req, res) => {
   res.render('notes/new-note', { folio });
 });
 
+//Numero de folio
 function generarNumeroFolio() {
   const fecha = new Date();
   const year = fecha.getFullYear().toString().slice(-2);
@@ -56,15 +73,19 @@ function generarNumeroFolio() {
   const folio = year + mes + dia + horas + minutos + segundos + milisegundos;
   return folio;
 };
+//Fin numero de folio
 
-app.get('/generate-pdf', async (req, res) => {
+//Generar PDF
+app.get('/generate-pdf/:id', async (req, res) => {
   const templatePath = path.join(__dirname, 'views', 'template.hbs');
   const templateContent = fs.readFileSync(templatePath, 'utf8');
   const template = handlebars.compile(templateContent);
+  const { id } = req.params;
+  const notes = await Note.findById(id);
   const data = {
-    title: 'Mi PDF Generado con Handlebars y Puppeteer',
-    content: 'Este es un ejemplo de PDF generado con Handlebars y Puppeteer.',
+    nombre: notes.nombre, nServicio: notes.nServicio
   };
+
   const html = template(data);
 
   const browser = await puppeteer.launch();
@@ -78,6 +99,133 @@ app.get('/generate-pdf', async (req, res) => {
   res.setHeader('Content-Disposition', 'attachment; filename=archivo.pdf');
   res.send(pdf);
 });
+//Fin generar PDF
+
+/*
+app.post('/generate-pdf-what', async (req, res) => {
+  const templatePath = path.join(__dirname, 'views', 'plantilla.hbs');
+  const templateContent = fs.readFileSync(templatePath, 'utf8');
+  const plantilla = handlebars.compile(templateContent);
+
+  const data = {
+    nombre: 'Nombre de prueba',
+    nServicio: 'Número de servicio de prueba'
+  };
+
+  const html = plantilla(data);
+
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
+  await page.setContent(html);
+
+  const pdfPath = path.join(__dirname, 'temp', 'archivo.pdf');
+  await page.pdf({ path: pdfPath, format: 'A4' }); // Generate the PDF
+
+  await browser.close();
+
+  res.setHeader('Content-Type', 'application/pdf');
+  res.setHeader('Content-Disposition', 'attachment; filename=archivo.pdf');
+  const pdf = fs.readFileSync(pdfPath);
+  res.send(pdf);
+});
+*/
+
+// Envio correos puppeteer
+app.get('/generate-pdf-correo/:id', async (req, res) => {
+  try {
+    const templatePath = path.join(__dirname, 'views', 'template.hbs');
+    const templateContent = fs.readFileSync(templatePath, 'utf8');
+    const template = handlebars.compile(templateContent);
+    const { id } = req.params;
+    // Supongamos que tienes un modelo llamado Note que contiene los datos que deseas en el PDF
+    const notes = await Note.findById(id);
+    const user = await User.findById(notes.user);
+    const data = {
+      nombre: notes.nombre,
+      nServicio: notes.nServicio
+    };
+
+    const html = template(data);
+
+    const browser = await puppeteer.launch();
+    const page = await browser.newPage();
+    await page.setContent(html);
+
+    const pdf = await page.pdf();
+    await browser.close();
+
+    // Guarda el archivo PDF temporalmente en el sistema de archivos
+    const pdfPath = path.join(__dirname, 'temp', 'archivo.pdf');
+    fs.writeFileSync(pdfPath, pdf);
+
+    // Envío de correo
+    let transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: 'israelsldn@gmail.com',
+        pass: 'ymcy lhdf bdwc cliz'
+      }
+    });
+
+    const source = fs.readFileSync(path.join(__dirname, 'views/plantilla.hbs'), 'utf8');
+    const plantilla = handlebars.compile(source);
+
+    async function enviarCorreo(destinatario, asunto, datos) {
+      const html = plantilla(datos);
+      let mailOptions = {
+        from: 'israelsldn@gmail.com',
+        to: destinatario,
+        subject: asunto,
+        html: html,
+        attachments: [
+          {
+            filename: 'archivo.pdf',
+            path: pdfPath
+          }
+        ]
+      };
+      try {
+        let info = await transporter.sendMail(mailOptions);
+        console.log('Correo enviado: %s', info.messageId);
+      } catch (error) {
+        console.error('Error al enviar el correo:', error);
+      }
+    }
+    enviarCorreo(
+      notes.email,
+      'Tu Orden esta terminada ' + notes.nombre,
+      { nombre: notes.nombre, mensaje: 'Equipo Esta Listo WOW, Le envio su nota de remisión' }
+    );
+
+    // Establece los encabezados para indicar que se está enviando un archivo PDF como respuesta
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', 'attachment; filename=archivo.pdf');
+
+    // Envía el archivo PDF como respuesta al usuario
+    res.sendFile(pdfPath);
+  } catch (error) {
+    console.error('Error al generar el PDF y enviar el correo:', error);
+    res.status(500).send('Error interno del servidor');
+  }
+});
+//fin pupperteer
+
+
+/*
+app.post('/upload-pdf', (req, res) => {
+  const pdfFile = req.files.pdf; // Suponiendo que estás utilizando un middleware como Multer para manejar la subida de archivos
+
+  const uploadPath = path.join(__dirname, 'uploads', pdfFile.name);
+
+  fs.writeFileSync(uploadPath, pdfFile.data); // Guardar el archivo en el servidor
+
+  const pdfUrl = `/uploads/${pdfFile.name}`; // Obtener la URL del archivo subido
+
+  res.send(pdfUrl); // Devolver la URL al cliente
+});
+*/
+
+
 
 // middlewares
 app.use(morgan("dev"));
@@ -108,6 +256,7 @@ app.use((req, res, next) => {
 app.use(indexRoutes);
 app.use(userRoutes);
 app.use(notesRoutes);
+app.use(piezasRoutes);
 
 
 // static files
@@ -123,5 +272,7 @@ app.use((error, req, res, next) => {
     error,
   });
 });
+
+
 
 export default app;

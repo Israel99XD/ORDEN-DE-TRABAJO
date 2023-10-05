@@ -29,3 +29,8 @@ h3 {
 .fa-edit{
   color: rgb(255, 208, 0);
 }
+
+.fa-file-pdf{
+font-size: 30PX;
+cursor: pointer;
+}

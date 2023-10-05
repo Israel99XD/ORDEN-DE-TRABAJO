@@ -1,9 +1,9 @@
 <div class="row">
   {{#each notes}}
   <div class="col-md-3">
-    <div class="card">
+    <div class="card d-flex">
       <div class="card-body">
-        <h4 class="card-title d-flex justify-content-between align-items-center text-center">
+        <h4 class="card-title d-flex justify-content-between ">
           Nombre del cliente: {{nombre}}<a href="/notes/edit/{{_id}}"><i class="fas fa-edit float-end ml-4"></i> </a>
           </form>
         </h4>
@@ -12,6 +12,21 @@
           <input type="hidden" name="_method" value="DELETE">
           <button type="submit" class="btn btn-primary btn-block btn-lg mt-2 w-100">Eliminar</button>
         </form>
+        <button class="btn btn-danger w-100 mt-1" id="generate-pdf" data-id="{{_id}}" {{#if (eq status 'Finalizado'
+          )}}{{else}}disabled{{/if}}><i><img src="/img/icon-pdf.png" style="width: 35px;"></i></button>
+        <!-- 
+        <div class="row">
+          <form id="whatsappForm">
+            <button {{#if (eq status 'Finalizado' )}}{{else}}disabled{{/if}}
+              class="btn btn-success btn-block w-100 mt-1" type="submit">Enviar Mensaje</button>
+            <input type="text" id="numero" name="numero" value="{{nTelefono}}" hidden readonly required>
+            <br>
+            <textarea id="mensaje" name="mensaje" hidden required>Hola {{nombre}} Tu equipo esta listo, te comparto la nota de remisión para que puedas pasar por tu equipo!">
+            </textarea>
+            <input type="file" id="pdfFile" accept=".pdf" hidden> 
+            <br>
+          </form> 
+        </div> -->
       </div>
     </div>
   </div>
@@ -26,3 +41,98 @@
   {{/each}}
 </div>
 
+
+
+<!--Script modal-->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<!--Script fin modal-->
+
+
+<!--Script enviar mensaje Correo-->
+<script>
+  document.getElementById('generate-pdf').addEventListener('click', async (event) => {
+    const id = event.currentTarget.getAttribute("data-id");
+    let ruta = '';
+    const swalWithBootstrapButtons = Swal.mixin({
+      customClass: {
+        confirmButton: 'btn btn-success ms-5',
+        cancelButton: 'btn btn-danger'
+      },
+      buttonsStyling: false
+    })
+
+    swalWithBootstrapButtons.fire({
+      title: 'Deseas que este pdf se envie a tu correo?',
+      text: "En caso que quieras enviar tu factura por correo selecciona la opcion Si enviar, en caso contrario eligue la opcion No enviar",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Si enviar',
+      cancelButtonText: 'No enviar',
+      reverseButtons: true
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        ruta = `/generate-pdf-correo/${id}`;
+      } else if (
+        /* Read more about handling dismissals below */
+        result.dismiss === Swal.DismissReason.cancel
+      ) {
+        ruta = `/generate-pdf/${id}`;
+      }
+
+      if (ruta != '') {
+        const response = await fetch(ruta);
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'OrdenTrabajo.pdf';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      }
+    })
+  });
+</script>
+<!--Fin Script enviar mensaje correo-->
+
+<!--Script enviar mensaje whatsapp
+<script>
+  document.getElementById('whatsappForm').addEventListener('submit', async function (event) {
+    event.preventDefault();
+
+    const numero = document.getElementById('numero').value;
+    const mensaje = document.getElementById('mensaje').value;
+
+    if (!numero || !mensaje) {
+      alert('Por favor, completa todos los campos.');
+      return;
+    }
+
+    const pdfFile = document.getElementById('pdfFile').files[0]; // Obtener el archivo PDF
+
+    const formData = new FormData(); // Crear un objeto FormData para enviar el archivo
+    formData.append('pdf', pdfFile);
+
+    const response = await fetch('/generate-pdf-what', { // Enviar el archivo al servidor
+      method: 'POST',
+      body: formData
+    });
+
+    if (response.ok) {
+      const pdfBlob = await response.blob(); // Obtener el PDF como un blob
+      const pdfUrl = URL.createObjectURL(pdfBlob); // Convertir el blob a una URL
+
+      const mensajeConPdf = `${mensaje}%0A${encodeURIComponent(pdfUrl)}`; // Agregar la URL al mensaje
+
+      const url = `https://api.whatsapp.com/send?phone=${numero}&text=${mensajeConPdf}`;
+      window.open(url, '_blank');
+
+      // Display the PDF in the preview iframe
+      const pdfPreview = document.getElementById('pdfPreview');
+      pdfPreview.src = pdfUrl;
+    } else {
+      alert('Error al generar el PDF');
+    }
+  });
+</script>
+Script enviar mensaje whatsapp-->

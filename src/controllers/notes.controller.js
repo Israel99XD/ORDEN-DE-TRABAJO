@@ -3,7 +3,7 @@ import Note from "../models/Note.js";
 export const renderNoteForm = (req, res) => res.render("notes/new-note");
 
 export const createNewNote = async (req, res) => {
-  const { nombre, descripcion, receptor, contrasenaEquipo, respaldo, passEquipo, malEquipo, descripcionDanio, status, nServicio, presupuesto } = req.body;
+  const { nombre, descripcion, receptor, contrasenaEquipo, respaldo, passEquipo, malEquipo, descripcionDanio, status, nServicio, presupuesto, nTelefono,email} = req.body;
   const errors = [];
   if (!nombre) {
     errors.push({ text: "Por favor ingrese un nombre" });
@@ -24,10 +24,14 @@ export const createNewNote = async (req, res) => {
       malEquipo,
       descripcionDanio,
       status,
-      presupuesto
+      presupuesto,
+      nTelefono,
+      email
     });
 
-  const newNote = new Note({ nombre, descripcion, receptor, contrasenaEquipo, respaldo, passEquipo, malEquipo, descripcionDanio, status, nServicio, presupuesto });
+  const newNote = new Note({ nombre, descripcion, receptor, contrasenaEquipo, 
+    respaldo, passEquipo, malEquipo, descripcionDanio, status, 
+    nServicio, presupuesto, nTelefono,email });
   newNote.user = req.user.id;
   await newNote.save();
   req.flash("success_msg", "Orden registrada correctamente");
@@ -62,8 +66,12 @@ export const updateNote = async (req, res) => {
     malEquipo,
     descripcionDanio,
     status,
-    presupuesto } = req.body;
-  await Note.findByIdAndUpdate(req.params.id, { nombre, descripcion, receptor, contrasenaEquipo, respaldo, passEquipo, malEquipo, descripcionDanio, status, nServicio, presupuesto });
+    presupuesto, 
+    nTelefono,
+    email, } = req.body;
+  await Note.findByIdAndUpdate(req.params.id, { nombre, descripcion, receptor, 
+    contrasenaEquipo, respaldo, passEquipo, malEquipo, 
+    descripcionDanio, status, nServicio, presupuesto, nTelefono,email });
   req.flash("success_msg", "Actualizado correctamente");
   res.redirect("/notes");
 };
