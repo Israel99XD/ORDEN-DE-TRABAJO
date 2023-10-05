@@ -8,6 +8,10 @@ import morgan from "morgan";
 import MongoStore from "connect-mongo";
 import { dirname, join } from "path";
 import { fileURLToPath } from "url";
+import puppeteer from "puppeteer";
+import fs from "fs";
+import handlebars from "handlebars";
+import path from "path";
 
 import { MONGODB_URI, PORT } from "./config.js";
 
@@ -51,7 +55,29 @@ function generarNumeroFolio() {
 
   const folio = year + mes + dia + horas + minutos + segundos + milisegundos;
   return folio;
-}
+};
+
+app.get('/generate-pdf', async (req, res) => {
+  const templatePath = path.join(__dirname, 'views', 'template.hbs');
+  const templateContent = fs.readFileSync(templatePath, 'utf8');
+  const template = handlebars.compile(templateContent);
+  const data = {
+    title: 'Mi PDF Generado con Handlebars y Puppeteer',
+    content: 'Este es un ejemplo de PDF generado con Handlebars y Puppeteer.',
+  };
+  const html = template(data);
+
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
+  await page.setContent(html);
+
+  const pdf = await page.pdf();
+  await browser.close();
+
+  res.setHeader('Content-Type', 'application/pdf');
+  res.setHeader('Content-Disposition', 'attachment; filename=archivo.pdf');
+  res.send(pdf);
+});
 
 // middlewares
 app.use(morgan("dev"));
