@@ -30,7 +30,8 @@
     "nodemailer": "^6.9.5",
     "passport": "^0.6.0",
     "passport-local": "^1.0.0",
-    "puppeteer": "^21.3.6"
+    "puppeteer": "^21.3.6",
+    "socket.io": "^4.7.2"
   },
   "devDependencies": {
     "dotenv": "^16.0.1",

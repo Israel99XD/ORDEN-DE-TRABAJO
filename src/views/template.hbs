@@ -65,40 +65,51 @@
                 <p><strong>Numero de Teléfono:</strong> {{nTelefono}}</p>
                 <p><strong>Fecha:</strong> {{date}}</p>
                 <p><strong>Quien recibio el equipo:</strong> {{receptor}}</p>
-                <p> <strong>Tarea realizada</strong>{{descripcion}} </p>
+                <p> <strong>Tarea realizada: </strong>{{descripcion}} </p>
             </div>
-            <table class="tabla-productos">
+            <table id="tabla-productos" class="tabla-productos">
                 <thead>
                     <tr>
                         <th>Pieza</th>
                         <th>Cantidad</th>
                         <th>Precio Unitario</th>
-                        <th>Total</th>
                     </tr>
                 </thead>
                 <tbody>
+                    {{#each piezas}}
                     <tr>
-                        <td>{{this.piezas}}</td>
-                        <td>{{precio}}</td>
-                        <td>$10.00</td>
-                        <td>$20.00</td>
+                        <td>{{this.nombre}}</td>
+                        <td> {{this.cantidad}}</td>
+                        <td> ${{this.precio}}</td>
                     </tr>
+                    {{/each}}
                 </tbody>
             </table>
             <div class="total">
-                <p><strong>Total: {{presupuesto}} </strong></p>
+                <p id="total-presupuesto"><strong>Total: $ </strong></p>
             </div>
-
-<!--<div id="qrcode"></div>-->
         </div>
     </div>
+    
     <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
-<!--<script>
-  var qrcode = new QRCode(document.getElementById("qrcode"), {
-    text: "http://localhost:4000/notes",  // Cambia esta URL por la que necesites
-    width: 128,
-    height: 128,
-  });
-</script>-->
+
+ <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var tablaProductos = document.getElementById("tabla-productos");
+        var totalPresupuesto = document.getElementById("total-presupuesto");
+
+        var total = 0;
+
+        for (var i = 1, row; row = tablaProductos.rows[i]; i++) {
+            var precioUnitario = parseFloat(row.cells[2].textContent.replace("$", ""));
+            total += precioUnitario;
+        }
+
+        total += 150; // Agrega 150 al total actual
+
+        totalPresupuesto.innerHTML = "<strong>Total: $ " + total.toFixed(2) + "</strong>";
+    });
+</script>
+
 </body>
 </html>

@@ -62,9 +62,9 @@
               </div>
             </div>
             <select class="form-select" id="pieza" name="piezas">
-              <option value="" disabled selected>Seleccione pieza</option>
+              <option disabled selected>Seleccione una pieza</option>
               {{#each piezas}}
-              <option value="{{nombre}}" {{#if (eq _id note.pieza)}}selected{{/if}}>{{nombre}}</option>
+              <option value="{{_id}}" {{#if (eq _id note.pieza)}}selected{{/if}}>{{nombre}} ${{precio}}</option>
               {{/each}}
             </select>
           </div>
@@ -76,6 +76,7 @@
     </div>
   </div>
 </div>
+
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
