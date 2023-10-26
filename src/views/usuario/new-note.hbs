@@ -1,7 +1,7 @@
 <div class="col-md-7 mx-auto">
     <div class="card">
         <div class="card-header bg-dark text-center">
-            <h3 class="text-white">Nueva Orden <a href="/notes"><button
+            <h3 class="text-white">Nueva Orden <a href="/user/notes"><button
                         class="btn btn-danger btn-sm float-end">SALIR</button></a></h3>
         </div>
         <div class="card-body text-right">
@@ -22,10 +22,13 @@
                     <div class="form-group mb-1 input-group-sm">
                         <input type="text" name="email" class="form-control" placeholder="Correo electronico" autofocus>
                     </div>
-<div id="contenedorInputs" class="form-group mb-1 input-group-sm text-center">
-    TAREAS A REALIZAR
-    <button type="button" onclick="agregarInput()">Agregar Tarea</button>
-</div>
+                    <div id="contenedorInputs" class="form-group mb-1 input-group-sm text-center">
+                        TAREAS A REALIZAR
+                    </div>
+                    <div class="text-center">
+                        <button class="btn btn-success btn-sm btn-block" type="button" onclick="agregarInput()">Agregar
+                            Tarea</button>
+                    </div>
                     <!--select-->
                     <div class="container text-center form-group mb-1">
                         El equipo tiene contraseña
@@ -151,15 +154,15 @@
 </script>
 
 <script>
-  function agregarInput() {
-    var contenedor = document.getElementById('contenedorInputs');
-    var nuevoInput = document.createElement('input');
+    function agregarInput() {
+        var contenedor = document.getElementById('contenedorInputs');
+        var nuevoInput = document.createElement('input');
 
-    nuevoInput.className = 'form-control mt-1';
-    nuevoInput.type = 'text';
-    nuevoInput.name = 'descripcion[]';
-    nuevoInput.placeholder = 'Ingrese trabajo a realizar';
+        nuevoInput.className = 'form-control mt-1';
+        nuevoInput.type = 'text';
+        nuevoInput.name = 'descripcion[]';
+        nuevoInput.placeholder = 'Ingrese trabajo a realizar';
 
-    contenedor.appendChild(nuevoInput);
-  }
+        contenedor.appendChild(nuevoInput);
+    }
 </script>

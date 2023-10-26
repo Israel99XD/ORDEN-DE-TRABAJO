@@ -4,15 +4,10 @@
     <div class="card d-flex">
       <div class="card-body">
         <h4 class="card-title d-flex justify-content-between ">
-          Nombre del cliente: {{nombre}}<a href="/notes/edit/{{_id}}"><i class="fas fa-edit float-end ml-4"></i> </a>
+          Nombre del cliente: {{nombre}}<a href="/notes/edit/{{_id}}"></a>
+          </form>
         </h4>
         <input class="form-control text-center" type="text" placeholder='{{status}}' readonly>
-        <form action="/notes/delete/{{_id}}?_method=DELETE" method="POST">
-          <input type="hidden" name="_method" value="DELETE">
-          <button type="submit" class="btn btn-primary btn-block btn-lg mt-2 w-100">Eliminar</button>
-        </form>
-        <button class="btn btn-danger w-100 mt-1" id="generate-pdf" data-id="{{_id}}" {{#if (eq status 'Finalizado'
-          )}}{{else}}disabled{{/if}}><i><img src="/img/icon-pdf.png" style="width: 35px;"></i></button>
         <!-- 
         <div class="row">
           <form id="whatsappForm">
@@ -34,7 +29,7 @@
     <div class="card-body">
       <h1>Hola {{nombre}}</h1>
       <p clsss="lead">Aún no hay ordenes</p>
-      <a href="/notes/add" class="btn btn-danger btn-block">Crear nueva orden</a>
+      <a href="/user/notes/add" class="btn btn-danger btn-block">Crear nueva orden</a>
     </div>
   </div>
   {{/each}}

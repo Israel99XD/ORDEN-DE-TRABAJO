@@ -7,7 +7,7 @@ const NoteSchema = new mongoose.Schema(
       required: false
     },
     descripcion: {
-      type: String,
+      type: [String],
       required: false
     },
     receptor: {
@@ -62,6 +62,14 @@ const NoteSchema = new mongoose.Schema(
     user: {
       type: String,
       required: true,
+    },
+    necesitaPiezas: {
+      type: String,
+      required: false
+    },
+    piezas: {
+      type: Array,
+      required: false
     },
   },
   {

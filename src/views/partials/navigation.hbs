@@ -12,7 +12,8 @@
         </li>
       </ul>
       <ul class="navbar-nav ms-auto">
-        {{#if user}}
+        {{#if user }}
+        {{#if (eq user.rol 'admin')}}
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"
             data-bs-toggle="dropdown" aria-expanded="false">
@@ -20,11 +21,27 @@
           </a>
           <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
             <a class="dropdown-item" href="/notes">Todas las Ordenes</a>
+            <a class="dropdown-item" href="/user/notes">Mis Ordenes</a>
             <a class="dropdown-item" href="/notes/add">Nueva Orden</a>
             <div class="dropdown-divider"></div>
             <a class="dropdown-item" href="/auth/logout">Cerrar sesion</a>
           </ul>
         </li>
+        {{else}}
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"
+            data-bs-toggle="dropdown" aria-expanded="false">
+            Perfil
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+            <h1>{{nombre}} </h1>
+            <a class="dropdown-item" href="/notes">Todas las Ordenes</a>
+            <a class="dropdown-item" href="/user/notes/add">Nueva Orden</a>
+            <div class="dropdown-divider"></div>
+            <a class="dropdown-item" href="/auth/logout">Cerrar sesion</a>
+          </ul>
+        </li>
+        {{/if}}
         {{else}}
         <li class="nav-item">
           <a class="nav-link" href="/auth/signin">Iniciar sesion</a>

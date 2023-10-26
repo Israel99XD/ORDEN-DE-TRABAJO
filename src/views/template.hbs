@@ -60,14 +60,17 @@
         <div class="nota-remision">
             <h2 class="titulo">Nota de Remisión</h2>
             <div class="cliente-info">
-                <p><strong>Cliente:</strong> {{nombre}}</p>
-                <p><strong>Dirección:</strong> {{nServicio}}</p>
-                <p><strong>Teléfono:</strong> Teléfono del Cliente</p>
+                <p><strong>Numero de servicio:</strong> {{nServicio}}</p>
+                <p><strong>Nombre del Cliente:</strong> {{nombre}}</p>
+                <p><strong>Numero de Teléfono:</strong> {{nTelefono}}</p>
+                <p><strong>Fecha:</strong> {{date}}</p>
+                <p><strong>Quien recibio el equipo:</strong> {{receptor}}</p>
+                <p> <strong>Tarea realizada</strong>{{descripcion}} </p>
             </div>
             <table class="tabla-productos">
                 <thead>
                     <tr>
-                        <th>Producto</th>
+                        <th>Pieza</th>
                         <th>Cantidad</th>
                         <th>Precio Unitario</th>
                         <th>Total</th>
@@ -75,30 +78,21 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td>Producto 1</td>
-                        <td>2</td>
+                        <td>{{this.piezas}}</td>
+                        <td>{{precio}}</td>
                         <td>$10.00</td>
                         <td>$20.00</td>
-                    </tr>
-                    <tr>
-                        <td>Producto 2</td>
-                        <td>3</td>
-                        <td>$15.00</td>
-                        <td>$45.00</td>
                     </tr>
                 </tbody>
             </table>
             <div class="total">
-                <p><strong>Total: $65.00</strong></p>
+                <p><strong>Total: {{presupuesto}} </strong></p>
             </div>
 
 <!--<div id="qrcode"></div>-->
-
         </div>
     </div>
-
     <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
-
 <!--<script>
   var qrcode = new QRCode(document.getElementById("qrcode"), {
     text: "http://localhost:4000/notes",  // Cambia esta URL por la que necesites
@@ -106,6 +100,5 @@
     height: 128,
   });
 </script>-->
-
 </body>
 </html>

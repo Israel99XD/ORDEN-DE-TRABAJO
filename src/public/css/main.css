@@ -34,3 +34,15 @@ h3 {
 font-size: 30PX;
 cursor: pointer;
 }
+
+.descripcion ul li {
+  display: flex; /* Hace que los elementos se alineen en una fila */
+  align-items: center; /* Centra verticalmente los elementos */
+}
+.descripcion ul li label {
+  margin-left: 10px; /* Agrega un espacio entre el checkbox y el texto de la tarea */
+}
+
+@media (max-width:768px) {
+  
+}

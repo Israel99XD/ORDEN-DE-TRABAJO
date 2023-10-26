@@ -36,8 +36,13 @@ export const createNewPieza = async (req, res) => {
 };
 
 export const renderPiezas = async (req, res) => {
-  const piezas = await Pieza.find({ user: req.user.id }).sort({ date: "desc" }).lean();
-  res.render("piezas/all-piezas", { piezas });
+  try {
+    const piezas = await Pieza.find({ user: req.user.id }).sort({ date: "desc" }).lean();
+    res.render('piezas/all-piezas', { piezas });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error al obtener las piezas');
+  }
 };
 
 export const renderEditPiezaForm = async (req, res) => {

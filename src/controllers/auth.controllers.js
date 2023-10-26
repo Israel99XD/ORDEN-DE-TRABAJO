@@ -33,7 +33,7 @@ export const signup = async (req, res) => {
   }
 
   // Saving a New User
-  const newUser = new User({ name, email, password, rol });
+  const newUser = new User({ name, email, password });
   newUser.password = await newUser.encryptPassword(password);
   await newUser.save();
   req.flash("success_msg", "Estas registrado");
@@ -43,10 +43,11 @@ export const signup = async (req, res) => {
 export const renderSigninForm = (req, res) => res.render("auth/signin");
 
 export const signin = passport.authenticate("local", {
-  successRedirect: "/notes",
+  successRedirect: "/dashboard",
   failureRedirect: "/auth/signin",
   failureFlash: true,
 });
+
 
 export const logout = async (req, res, next) => {
   await req.logout((err) => {

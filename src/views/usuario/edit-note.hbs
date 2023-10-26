@@ -1,0 +1,41 @@
+{{#each errors}}
+<div class="alert alert-danger alert-dismissible fade show" role="alert">
+  {{text}}
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+{{/each}}
+
+<div class="col-md-5 mx-auto">
+  <div class="card">
+    <div class="card-header bg-black text-center">
+      <h3>EDITAR ORDEN <a href="/notes"><button class="btn btn-danger btn-sm float-end">ATRAS</button></a></h3>
+    </div>
+    <div class="card-body">
+      <form action="/notes/edit-note/{{note._id}}?_method=PUT" method="POST">
+        <input type="hidden" name="_method" value="PUT" />
+        <div class="container text-center form-group mb-1">STATUS
+          <div class="form-group">
+            <div class="form-check form-check-inline">
+              <input {{#if (eq note.status 'No iniciado' )}}checked{{else}}{{/if}} class="form-check-input" type="radio"
+                name="status" id="status" value="No iniciado">
+              <label class="form-check-label" for="inlineRadio1">No iniciado</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input {{#if (eq note.status 'En proceso' )}}checked{{else}}{{/if}} class="form-check-input" type="radio" name="status" id="status" value="En proceso">
+              <label class="form-check-label" for="inlineRadio2">En proceso</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input {{#if (eq note.status 'Finalizado' )}}checked{{else}}{{/if}} class="form-check-input" type="radio" name="status" id="status" value="Finalizado">
+              <label class="form-check-label" for="inlineRadio2">Finalizado</label>
+            </div>
+          </div>
+          <button class="btn btn-success w-100 mt-2" type="submit">
+            Guardar
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

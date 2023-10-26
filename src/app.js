@@ -14,7 +14,7 @@ import path from "path";
 import Note from "./models/Note.js";
 import handlebars from "handlebars";
 import nodemailer from "nodemailer"
-import Pieza from "./models/Pieza.js";
+import bodyParser from "body-parser";
 
 import { MONGODB_URI, PORT } from "./config.js";
 
@@ -22,13 +22,20 @@ import indexRoutes from "./routes/index.routes.js";
 import notesRoutes from "./routes/notes.routes.js";
 import piezasRoutes from "./routes/piezas.routes.js"
 import userRoutes from "./routes/auth.routes.js";
+import usuariosRoutes from "./routes/user.routes.js"
 
 import "./config/passport.js";
 import User from "./models/User.js";
 
 
+
 // Initializations
 const app = express();
+
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -40,7 +47,11 @@ app.set("port", PORT);
 app.set("views", join(__dirname, "views"));
 
 // config view engine
+
 const hbs = exphbs.create({
+
+
+  
   defaultLayout: "main",
   layoutsDir: join(app.get("views"), "layouts"),
   partialsDir: join(app.get("views"), "partials"),
@@ -58,6 +69,9 @@ app.get('/notes/add', (req, res) => {
   const folio = generarNumeroFolio();
   res.render('notes/new-note', { folio });
 });
+
+
+
 
 //Numero de folio
 function generarNumeroFolio() {
@@ -83,7 +97,14 @@ app.get('/generate-pdf/:id', async (req, res) => {
   const { id } = req.params;
   const notes = await Note.findById(id);
   const data = {
-    nombre: notes.nombre, nServicio: notes.nServicio
+    nombre: notes.nombre, 
+    nServicio: notes.nServicio, 
+    nTelefono: notes.nTelefono, 
+    date: notes.date, 
+    receptor:notes.receptor, 
+    presupuesto: notes.presupuesto,
+    piezas: notes.piezas,
+    descripcion: notes.descripcion
   };
 
   const html = template(data);
@@ -101,7 +122,7 @@ app.get('/generate-pdf/:id', async (req, res) => {
 });
 //Fin generar PDF
 
-/*
+/* PDF WHATSAPP
 app.post('/generate-pdf-what', async (req, res) => {
   const templatePath = path.join(__dirname, 'views', 'plantilla.hbs');
   const templateContent = fs.readFileSync(templatePath, 'utf8');
@@ -141,8 +162,14 @@ app.get('/generate-pdf-correo/:id', async (req, res) => {
     const notes = await Note.findById(id);
     const user = await User.findById(notes.user);
     const data = {
-      nombre: notes.nombre,
-      nServicio: notes.nServicio
+      nombre: notes.nombre, 
+      nServicio: notes.nServicio, 
+      nTelefono: notes.nTelefono, 
+      date: notes.date, 
+      receptor:notes.receptor, 
+      presupuesto: notes.presupuesto,
+      piezas: notes.piezas,
+      descripcion: notes.descripcion
     };
 
     const html = template(data);
@@ -193,8 +220,8 @@ app.get('/generate-pdf-correo/:id', async (req, res) => {
     }
     enviarCorreo(
       notes.email,
-      'Tu Orden esta terminada ' + notes.nombre,
-      { nombre: notes.nombre, mensaje: 'Equipo Esta Listo WOW, Le envio su nota de remisión' }
+      notes.nombre +' Tu Orden de Trabajo con numero de  servicio ' + notes.nServicio +' esta terminada ',
+      { nombre: notes.nombre, mensaje: 'Su quipo esta listo, le envio su nota de remisión para que pueda pasar a recoger su equipo' }
     );
 
     // Establece los encabezados para indicar que se está enviando un archivo PDF como respuesta
@@ -224,7 +251,6 @@ app.post('/upload-pdf', (req, res) => {
   res.send(pdfUrl); // Devolver la URL al cliente
 });
 */
-
 
 
 // middlewares
@@ -257,6 +283,7 @@ app.use(indexRoutes);
 app.use(userRoutes);
 app.use(notesRoutes);
 app.use(piezasRoutes);
+app.use(usuariosRoutes);
 
 
 // static files

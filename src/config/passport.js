@@ -20,7 +20,7 @@ passport.use(
       const isMatch = await user.matchPassword(password);
       if (!isMatch)
         return done(null, false, { message: "Contraseña incorrecta" });
-      
+
       return done(null, user);
     }
   )

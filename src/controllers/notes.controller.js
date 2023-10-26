@@ -1,22 +1,41 @@
 import Note from "../models/Note.js";
+import Pieza from "../models/Pieza.js";
 
 export const renderNoteForm = (req, res) => res.render("notes/new-note");
 
 export const createNewNote = async (req, res) => {
-  const { nombre, descripcion, receptor, contrasenaEquipo, respaldo, passEquipo, malEquipo, descripcionDanio, status, nServicio, presupuesto, nTelefono,email} = req.body;
+  const {
+    nombre,
+    receptor,
+    contrasenaEquipo,
+    respaldo,
+    passEquipo,
+    malEquipo,
+    descripcionDanio,
+    status,
+    nServicio,
+    presupuesto,
+    nTelefono,
+    email,
+    piezas,
+    necesitaPiezas
+  } = req.body;
+
   const errors = [];
   if (!nombre) {
     errors.push({ text: "Por favor ingrese un nombre" });
   }
-  if (!descripcion) {
-    errors.push({ text: "Por favor ingrese una descripción" });
+  if (!tareas || tareas.length === 0) {
+    errors.push({ text: "Por favor ingrese al menos una tarea" });
   }
-  if (errors.length > 0)
+  // Resto del código para verificar otros campos...
+
+  if (errors.length > 0) {
     return res.render("notes/new-note", {
       errors,
       nombre,
       nServicio,
-      descripcion,
+      tareas,
       receptor,
       contrasenaEquipo,
       respaldo,
@@ -26,12 +45,31 @@ export const createNewNote = async (req, res) => {
       status,
       presupuesto,
       nTelefono,
-      email
+      email,
+      piezas,
+      necesitaPiezas // Asegúrate de mantener las piezas seleccionadas en el formulario
     });
+  }
 
-  const newNote = new Note({ nombre, descripcion, receptor, contrasenaEquipo, 
-    respaldo, passEquipo, malEquipo, descripcionDanio, status, 
-    nServicio, presupuesto, nTelefono,email });
+  const newNote = new Note({
+    
+    nombre,
+    descripcion: tareas,
+    receptor,
+    contrasenaEquipo,
+    respaldo,
+    passEquipo,
+    malEquipo,
+    descripcionDanio,
+    status,
+    nServicio,
+    presupuesto,
+    nTelefono,
+    email,
+    piezas,
+    necesitaPiezas // Asigna todas las piezas seleccionadas
+  });
+
   newNote.user = req.user.id;
   await newNote.save();
   req.flash("success_msg", "Orden registrada correctamente");
@@ -39,24 +77,21 @@ export const createNewNote = async (req, res) => {
 };
 
 export const renderNotes = async (req, res) => {
-  const notes = await Note.find({ user: req.user.id })
-    .sort({ date: "desc" })
-    .lean();
+  const notes = await Note.find({}).sort({ date: "desc" }).lean();
   res.render("notes/all-notes", { notes });
 };
 
 export const renderEditForm = async (req, res) => {
   const note = await Note.findById(req.params.id).lean();
-  if (note.user != req.user.id) {
-    req.flash("error_msg", "No autorizado");
-    return res.redirect("/notes");
-  }
-  res.render("notes/edit-note", { note });
+  const piezas = await Pieza.find({}).lean(); // Obtener todas las piezas
+  const tareas = await Note.find({},{descripcion: 1}).lean();
+  res.render("notes/edit-note", { note, piezas, tareas});
 };
 
 
 export const updateNote = async (req, res) => {
-  const { nombre,
+  const {
+    nombre,
     nServicio,
     descripcion,
     receptor,
@@ -66,15 +101,51 @@ export const updateNote = async (req, res) => {
     malEquipo,
     descripcionDanio,
     status,
-    presupuesto, 
+    presupuesto,
     nTelefono,
-    email, } = req.body;
-  await Note.findByIdAndUpdate(req.params.id, { nombre, descripcion, receptor, 
-    contrasenaEquipo, respaldo, passEquipo, malEquipo, 
-    descripcionDanio, status, nServicio, presupuesto, nTelefono,email });
-  req.flash("success_msg", "Actualizado correctamente");
+    email,
+    piezas,
+    necesitaPiezas // Piezas seleccionadas como un array
+  } = req.body;
+
+  const noteId = req.params.id;
+
+  await Note.findByIdAndUpdate(noteId, {
+    nombre,
+    descripcion,
+    receptor,
+    contrasenaEquipo,
+    respaldo,
+    passEquipo,
+    malEquipo,
+    descripcionDanio,
+    status,
+    nServicio,
+    presupuesto,
+    nTelefono,
+    email,
+    piezas,
+    necesitaPiezas // Actualiza las piezas seleccionadas en la orden
+  });
+  if (piezas) {
+    try {
+      const pieza = await Pieza.findOne({nombre: piezas});
+      console.log(pieza.cantidad);
+      if (pieza && pieza.cantidad > 0) {
+        pieza.cantidad -= 1;
+        await pieza.save();
+      } else {
+        req.flash("error_msg", "No hay suficientes piezas disponibles");
+      }
+    } catch (error) {
+      console.error(error);
+      req.flash("error_msg", "Error al actualizar la cantidad de la pieza");
+    }
+  }
   res.redirect("/notes");
 };
+
+
 
 
 export const deleteNote = async (req, res) => {
